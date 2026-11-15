@@ -1,0 +1,36 @@
+import { chromium } from 'playwright-core';
+const browser = await chromium.launch({ executablePath: process.env.EXE, args: ['--no-sandbox','--disable-gpu'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+page.on('pageerror', e => console.log('PAGEERROR:', e.message.slice(0,300)));
+page.on('console', m => { if (m.type()==='error') console.log('CONSOLE:', m.text().slice(0,180)); });
+await page.goto(process.env.URL, { waitUntil: 'load' });
+await page.screenshot({ path: 'p0-gate.png' });
+await page.fill('#gatekey', 'walnut'); await page.keyboard.press('Enter'); await page.waitForTimeout(1400);
+await page.screenshot({ path: 'p1-home.png' });
+await page.click('.navitem[data-k="drill"]'); await page.waitForTimeout(700);
+await page.fill('#guess', '0.6'); await page.click('#reveal'); await page.waitForTimeout(900);
+await page.screenshot({ path: 'p2-drill.png' });
+await page.click('.navitem[data-k="learn"]'); await page.waitForTimeout(600);
+await page.screenshot({ path: 'p3-learn.png' });
+await page.click('.lesson-row[data-i="0"]'); await page.waitForTimeout(600);
+await page.click('#mark'); await page.waitForTimeout(500);
+await page.screenshot({ path: 'p4-lesson.png' });
+await page.click('.navitem[data-k="atlas"]'); await page.waitForTimeout(800);
+await page.screenshot({ path: 'p5-atlas.png' });
+await page.click('.navitem[data-k="evaluate"]'); await page.waitForTimeout(800);
+await page.screenshot({ path: 'p6-evaluate.png' });
+await page.click('.navitem[data-k="challenges"]'); await page.waitForTimeout(700);
+await page.screenshot({ path: 'p7-challenges.png' });
+await page.click('.navitem[data-k="progress"]'); await page.waitForTimeout(700);
+await page.screenshot({ path: 'p8-progress.png' });
+// search
+await page.fill('#searchIn', 'knight'); await page.waitForTimeout(400);
+await page.screenshot({ path: 'p9-search.png' });
+// mobile
+await page.setViewportSize({ width: 390, height: 844 });
+await page.click('.bnav-btn[data-k="home"]'); await page.waitForTimeout(900);
+await page.screenshot({ path: 'p10-mobile-home.png' });
+await page.click('.bnav-btn[data-k="drill"]'); await page.waitForTimeout(700);
+await page.screenshot({ path: 'p11-mobile-drill.png' });
+console.log('streak chip:', await page.locator('#tbStreak').textContent().catch(()=>'?'));
+await browser.close();
